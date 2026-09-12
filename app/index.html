@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ExaVaR — Real-time Portfolio Risk Engine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card: #10121a;
+      --border: #1e2230;
+      --border-light: #2a3045;
+      --text-muted: #7e879f;
+    }
+    body {
+      background-color: var(--bg);
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    }
+    .font-mono-num {
+      font-family: "JetBrains Mono", "SF Mono", "Fira Code", Menlo, monospace;
+      font-feature-settings: "tnum" 1;
+    }
+    .thin-border {
+      border: 1px solid var(--border);
+    }
+    .card-bg {
+      background: var(--card);
+    }
+    /* Institutional Range Slider */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: #1b1f2e;
+      height: 4px;
+      border-radius: 2px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 2px;
+      background: #3b82f6;
+      cursor: pointer;
+      border: 1px solid #60a5fa;
+      transition: background 0.15s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: #60a5fa;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-6 lg:p-10 max-w-7xl mx-auto selection:bg-blue-900">
+
+  <!-- TOP HEADER -->
+  <header class="flex justify-between items-center pb-6 border-b border-[#1e2230]">
+    <div>
+      <div class="flex items-center gap-3">
+        <span class="text-xl font-bold tracking-wider text-white">ExaVaR</span>
+        <span class="text-[10px] tracking-widest uppercase bg-[#141a29] text-blue-400 border border-blue-900/60 px-2 py-0.5 rounded font-mono-num">
+          v1.0-DEMO
+        </span>
+      </div>
+      <p class="text-xs text-[#7e879f] mt-0.5 tracking-tight">Real-time portfolio risk engine</p>
+    </div>
+
+    <!-- Live Status Indicators -->
+    <div class="flex items-center gap-4 text-xs font-mono-num">
+      <div class="flex items-center gap-2">
+        <span id="liveDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-emerald-400 tracking-wider">LIVE</span>
+      </div>
+      <span class="text-[#2a3045]">•</span>
+      <div class="flex items-center gap-2 text-[#7e879f]">
+        <span>EXASOL CONNECTED</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- KPI SUMMARY ROW -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+    <div class="card-bg thin-border p-6 rounded">
+      <div class="text-[11px] font-semibold tracking-widest text-[#7e879f] uppercase mb-1">Portfolio Value</div>
+      <div class="flex items-baseline gap-3">
+        <span class="text-3xl lg:text-4xl font-light text-white font-mono-num" id="portfolioValDisplay">$100,000</span>
+        <span class="text-xs text-[#7e879f]">8 assets</span>
+      </div>
+    </div>
+
+    <div class="card-bg thin-border p-6 rounded">
+      <div class="text-[11px] font-semibold tracking-widest text-[#7e879f] uppercase mb-1">1-Day Value at Risk (95%)</div>
+      <div class="flex items-baseline gap-3">
+        <span class="text-3xl lg:text-4xl font-light text-rose-400 font-mono-num" id="varDollarDisplay">$4,284</span>
+        <span class="text-xs text-rose-500/90 font-mono-num" id="varPctDisplay">4.28% of portfolio</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN WORKSPACE -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start flex-grow">
+    
+    <!-- LEFT: PORTFOLIO ALLOCATION CONTROLS (5 cols) -->
+    <section class="lg:col-span-5 card-bg thin-border rounded p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xs font-semibold tracking-widest text-[#7e879f] uppercase">Portfolio Allocation</h2>
+        <span class="text-[10px] text-[#4b5563] font-mono-num">AUTO-NORMALIZED 100%</span>
+      </div>
+
+      <div id="slidersList" class="space-y-4">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <div class="mt-8 pt-5 border-t border-[#1e2230] flex items-center justify-between">
+        <label for="notionalInput" class="text-xs text-[#7e879f]">Portfolio Notional ($)</label>
+        <input 
+          type="number" 
+          id="notionalInput" 
+          value="100000" 
+          step="10000"
+          class="w-36 bg-[#0c0d14] border border-[#2a3045] rounded px-3 py-1.5 text-right text-xs font-mono-num text-white focus:outline-none focus:border-blue-500"
+        />
+      </div>
+    </section>
+
+    <!-- RIGHT: RISK DISTRIBUTION CHART (7 cols) -->
+    <section class="lg:col-span-7 card-bg thin-border rounded p-6 flex flex-col justify-between h-full min-h-[460px]">
+      <div>
+        <div class="flex justify-between items-center mb-2">
+          <h2 class="text-xs font-semibold tracking-widest text-[#7e879f] uppercase">Risk Distribution</h2>
+          <span class="text-[11px] font-mono-num text-[#7e879f]">1-min log returns (1 yr)</span>
+        </div>
+        
+        <!-- Chart Canvas Container -->
+        <div class="relative h-64 w-full mt-4">
+          <canvas id="distributionChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Cutoff Footnote -->
+      <div class="mt-6 pt-4 border-t border-[#1e2230] flex justify-between items-center text-xs font-mono-num">
+        <span class="text-[#7e879f]">5th percentile cutoff:</span>
+        <span class="text-rose-400 font-semibold" id="percentileCutoffDisplay">-4.28%</span>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- BOTTOM EXASOL QUERY TELEMETRY (The Hackathon Scoring Card) -->
+  <footer class="card-bg thin-border rounded p-4 mt-6">
+    <div class="text-[10px] font-semibold tracking-widest text-[#5c657e] uppercase mb-3">
+      Exasol Execution Telemetry
+    </div>
+    <div class="flex flex-wrap items-center justify-between text-xs font-mono-num text-[#94a3b8] gap-4">
+      <div class="flex items-center gap-2.5">
+        <span id="latencyDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+        <span class="text-white font-semibold text-sm" id="latencyDisplay">87 ms</span>
+      </div>
+      <div class="text-[#64748b]">|</div>
+      <div>SQL executed server-side (<span class="text-blue-400">PERCENTILE_CONT</span>)</div>
+      <div class="text-[#64748b]">|</div>
+      <div>Scanned: <span class="text-slate-300" id="scannedRows">780,000</span> rows</div>
+      <div class="text-[#64748b]">|</div>
+      <div class="text-emerald-400">1 result row transferred over wire</div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    const ASSETS = ["AAPL", "NVDA", "AMD", "MSFT", "GOOGL", "BTC", "ETH", "SOL"];
+    
+    // Initial weights (sum to 100)
+    let rawWeights = {
+      AAPL: 15, NVDA: 20, AMD: 10, MSFT: 15,
+      GOOGL: 10, BTC: 10, ETH: 10, SOL: 10
+    };
+
+    // Build sliders in clean financial terminal layout
+    const container = document.getElementById("slidersList");
+    ASSETS.forEach(asset => {
+      const row = document.createElement("div");
+      row.className = "flex flex-col gap-1.5";
+      row.innerHTML = `
+        <div class="flex justify-between items-center text-xs">
+          <span class="font-mono text-slate-300 font-semibold">${asset}</span>
+          <span id="pct_${asset}" class="font-mono-num text-slate-400 text-[11px]">0.0%</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <input 
+            type="range" 
+            id="range_${asset}" 
+            min="0" 
+            max="100" 
+            value="${rawWeights[asset]}" 
+            class="w-full"
+          />
+        </div>
+      `;
+      container.appendChild(row);
+
+      document.getElementById(`range_${asset}`).addEventListener("input", (e) => {
+        rawWeights[asset] = parseFloat(e.target.value);
+        triggerUpdate();
+      });
+    });
+
+    document.getElementById("notionalInput").addEventListener("input", triggerUpdate);
+
+    // Initialize Chart.js with dark terminal styling
+    let chart;
+    function setupChart() {
+      const ctx = document.getElementById('distributionChart').getContext('2d');
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: [],
+          datasets: [{
+            data: [],
+            backgroundColor: '#1e293b',
+            hoverBackgroundColor: '#3b82f6',
+            borderRadius: 1,
+            barPercentage: 1.0,
+            categoryPercentage: 1.0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 150 },
+          plugins: { legend: { display: false } },
+          scales: {
+            x: {
+              grid: { color: '#161922', drawBorder: false },
+              ticks: { color: '#64748b', font: { family: 'monospace', size: 10 }, maxTicksLimit: 8 }
+            },
+            y: {
+              grid: { color: '#161922', drawBorder: false },
+              ticks: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    // Debounce slider inputs to avoid flooding requests
+    let timer = null;
+    function triggerUpdate() {
+      clearTimeout(timer);
+      timer = setTimeout(updatePortfolio, 40);
+    }
+
+    async function updatePortfolio() {
+      const sumRaw = Object.values(rawWeights).reduce((a, b) => a + b, 0);
+      const allocations = {};
+      
+      ASSETS.forEach(a => {
+        allocations[a] = sumRaw === 0 ? 1 / ASSETS.length : rawWeights[a] / sumRaw;
+        document.getElementById(`pct_${a}`).innerText = (allocations[a] * 100).toFixed(1) + "%";
+      });
+
+      const notional = parseFloat(document.getElementById("notionalInput").value) || 100000;
+      document.getElementById("portfolioValDisplay").innerText = "$" + notional.toLocaleString();
+
+      try {
+        const response = await fetch("/api/var", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ allocations, notional })
+        });
+        const data = await response.json();
+
+        // Update VaR figures
+        document.getElementById("varDollarDisplay").innerText = "$" + Math.round(data.var_dollars).toLocaleString();
+        document.getElementById("varPctDisplay").innerText = Math.abs(data.var_return_pct).toFixed(2) + "% of portfolio";
+        document.getElementById("percentileCutoffDisplay").innerText = data.var_percentile_cutoff + "%";
+
+        // Update latency telemetry badge
+        const lat = data.latency_ms;
+        document.getElementById("latencyDisplay").innerText = `${lat} ms`;
+        const dot = document.getElementById("latencyDot");
+        dot.className = lat < 150 ? "w-2.5 h-2.5 rounded-full bg-emerald-400" : "w-2.5 h-2.5 rounded-full bg-amber-400";
+
+        // Update Rows telemetry
+        if(data.rows_scanned) {
+          document.getElementById("scannedRows").innerText = data.rows_scanned.toLocaleString();
+        }
+
+        // Color bars left of 5th percentile as red risk area
+        const colors = data.chart_labels.map(val => val <= data.var_percentile_cutoff ? '#f43f5e' : '#1e293b');
+        chart.data.labels = data.chart_labels.map(l => l + "%");
+        chart.data.datasets[0].data = data.chart_density;
+        chart.data.datasets[0].backgroundColor = colors;
+        chart.update();
+
+      } catch (err) {
+        console.error("Failed to fetch VaR telemetry:", err);
+      }
+    }
+
+    setupChart();
+    updatePortfolio();
+  </script>
+</body>
+</html>
