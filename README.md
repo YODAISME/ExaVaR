@@ -176,6 +176,10 @@ ExaVaR/
 |-- verify_parameterized.py <- Parameterized query contract tests
 |-- benchmark.py            <- 50-iteration latency benchmark (target < 150 ms)
 |-- test_ingestion.py       <- Unit tests for all ingestion stages
+|-- requirements.txt        <- Project dependencies
+|-- LICENSE                 <- MIT License
+|-- docs/
+|   `-- screenshot.png      <- Live terminal UI dashboard preview
 |-- data/
 |   |-- README.md           <- Data format + sourcing guide
 |   |-- AAPL.csv, NVDA.csv, AMD.csv, MSFT.csv, GOOGL.csv
@@ -184,7 +188,7 @@ ExaVaR/
 `-- app/
     |-- server.py           <- FastAPI application
     |-- index.html          <- Risk terminal UI
-    `-- requirements.txt    <- Python dependencies
+    `-- requirements.txt    <- App server dependencies
 ```
 
 ---
