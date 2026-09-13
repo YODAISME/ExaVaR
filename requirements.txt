@@ -1,0 +1,23 @@
+﻿# ---------------------------------------------------------------
+# ExaVaR — Root Requirements
+# Covers all scripts: ingestion pipeline, validation, benchmark,
+# and the FastAPI server.
+#
+# Install everything:
+#     pip install -r requirements.txt
+# ---------------------------------------------------------------
+
+# Data processing (ingestion pipeline)
+pandas>=2.0.0
+numpy>=1.24.0
+pytz>=2023.3
+
+# Exasol connectivity (ingestion, server, benchmark, validate)
+pyexasol>=0.25.0
+
+# Web server
+fastapi>=0.100.0
+uvicorn>=0.23.0
+
+# Optional: live data download (~7 trailing days of 1-min bars only)
+# yfinance>=0.2.0

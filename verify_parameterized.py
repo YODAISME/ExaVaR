@@ -1,7 +1,7 @@
 """
 verify_parameterized.py — Parameterized VaR Pipeline Verification & Wiring Test
 =============================================================================
-Self-contained regression test for Person B deliverables:
+Self-contained regression test for ExaVaR Benchmarks:
   1. Inspects var_query.sql to ensure no hardcoded weights exist.
   2. Binds the 8 parameters using PyExasol {!d} placeholder syntax.
   3. Verifies baseline reconciliation with known-good -$71.97 result.
@@ -13,9 +13,9 @@ import os
 import ssl
 import pyexasol
 
-DSN = "localhost:8563"
-USER = "sys"
-PASSWORD = "exasol"
+DSN      = os.getenv("EXASOL_DSN",      "localhost:8563")
+USER     = os.getenv("EXASOL_USER",     "sys")
+PASSWORD = os.getenv("EXASOL_PASSWORD", "exasol")
 
 QUERY_PATH = os.path.join(os.path.dirname(__file__), "var_query.sql")
 with open(QUERY_PATH, "r", encoding="utf-8") as f:

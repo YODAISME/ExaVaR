@@ -1,8 +1,8 @@
-"""
+﻿"""
 server.py — ExaVaR: Production Risk Engine with Real Exasol Integration
 
-Implements the Person C Task List:
-  1. Wires Person B's frozen var_query.sql directly as single source of truth.
+Implementation notes:
+  1. Wires var_query.sql as the single source of truth.
   2. Lifespan startup/shutdown pattern for single persistent PyExasol connection.
   3. Proper parameterized execution using PyExasol {!d} placeholders (no f-strings).
   4. Precise query timing using time.perf_counter() around query execution only.
@@ -27,7 +27,7 @@ EXASOL_DSN = os.getenv("EXASOL_DSN", "localhost:8563")
 EXASOL_USER = os.getenv("EXASOL_USER", "sys")
 EXASOL_PASSWORD = os.getenv("EXASOL_PASSWORD", "exasol")
 
-# Reference Person B's frozen var_query.sql directly from the repository root
+# Reference the frozen var_query.sql directly from the repository root
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 QUERY_PATH = os.path.join(BASE_DIR, "var_query.sql")
 
@@ -38,7 +38,7 @@ if not os.path.exists(QUERY_PATH):
 with open(QUERY_PATH, "r", encoding="utf-8") as f:
     FROZEN_VAR_QUERY = f.read()
 
-# 8 canonical assets matching Person B's contract
+# 8 canonical assets matching the query contract
 ASSET_KEYS = ["aapl", "nvda", "msft", "googl", "amd", "btc", "eth", "sol"]
 
 
@@ -49,7 +49,7 @@ async def lifespan(app: FastAPI):
     Open the persistent PyExasol connection once at server startup,
     attach to app.state, and close cleanly on shutdown.
     """
-    print(f"🔌 [LIFESPAN] Connecting to Exasol at {EXASOL_DSN}...")
+    print(f"[LIFESPAN] Connecting to Exasol at {EXASOL_DSN}...")
     try:
         conn = pyexasol.connect(
             dsn=EXASOL_DSN,
@@ -58,21 +58,21 @@ async def lifespan(app: FastAPI):
             websocket_sslopt={"cert_reqs": ssl.CERT_NONE},
         )
         app.state.exa_conn = conn
-        print("✅ [LIFESPAN] Persistent Exasol connection established.")
+        print("[LIFESPAN] Persistent Exasol connection established.")
     except Exception as e:
-        print(f"⚠️ [LIFESPAN] Exasol connection failed at startup: {e}")
+        print(f"[LIFESPAN] Exasol connection failed at startup: {e}")
         app.state.exa_conn = None
 
     yield  # Server handles requests while alive
 
     # Clean shutdown
     if getattr(app.state, "exa_conn", None):
-        print("🛑 [LIFESPAN] Closing Exasol connection...")
+        print("[LIFESPAN] Closing Exasol connection...")
         try:
             app.state.exa_conn.close()
         except Exception:
             pass
-        print("🔒 [LIFESPAN] Connection closed.")
+        print("[LIFESPAN] Connection closed.")
 
 
 app = FastAPI(title="ExaVaR Risk Engine", lifespan=lifespan)
@@ -115,7 +115,7 @@ async def calculate_var(req: VaRRequest, request: Request):
     raw_alloc = req.allocations
     total_raw = sum(raw_alloc.values())
 
-    # Build the exact 8 parameters Person B's query expects: {asset_allocation!d}
+    # Build the exact 8 parameters the query expects: {asset_allocation!d}
     query_params = {}
     for asset in ASSET_KEYS:
         # Check both upper and lower case in input dict (e.g. "AAPL" or "aapl")

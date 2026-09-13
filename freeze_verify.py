@@ -2,14 +2,19 @@
 Freeze verification: confirm the composed canonical query produces
 the same result as the individually validated stages.
 """
+import os
 import ssl
 import math
 import pyexasol
 
+EXASOL_DSN      = os.getenv("EXASOL_DSN",      "localhost:8563")
+EXASOL_USER     = os.getenv("EXASOL_USER",     "sys")
+EXASOL_PASSWORD = os.getenv("EXASOL_PASSWORD", "exasol")
+
 conn = pyexasol.connect(
-    dsn="localhost:8563",
-    user="sys",
-    password="exasol",
+    dsn=EXASOL_DSN,
+    user=EXASOL_USER,
+    password=EXASOL_PASSWORD,
     websocket_sslopt={"cert_reqs": ssl.CERT_NONE},
 )
 
