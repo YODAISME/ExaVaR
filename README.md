@@ -196,6 +196,7 @@ var = round(100_000 * (np.exp(p5) - 1), 2)
 
 ## Repository Layout
 
+```
 ExaVaR/
 |-- ingestion.py            <- 7-stage data pipeline (raw CSV -> Exasol)
 |-- schema.sql              <- PRICE_BARS table DDL
@@ -221,6 +222,7 @@ ExaVaR/
     |-- server.py           <- FastAPI application
     |-- index.html          <- Risk terminal UI
     `-- requirements.txt    <- App server dependencies
+```
 
 ---
 
