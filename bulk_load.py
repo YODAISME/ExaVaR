@@ -10,12 +10,16 @@ import csv
 import time
 import pyexasol
 
+EXASOL_DSN      = os.getenv("EXASOL_DSN",      "localhost:8563")
+EXASOL_USER     = os.getenv("EXASOL_USER",     "sys")
+EXASOL_PASSWORD = os.getenv("EXASOL_PASSWORD", "exasol")
+
 DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "price_bars_cleaned.csv")
 
 conn = pyexasol.connect(
-    dsn="localhost:8563",
-    user="sys",
-    password="exasol",
+    dsn=EXASOL_DSN,
+    user=EXASOL_USER,
+    password=EXASOL_PASSWORD,
     websocket_sslopt={"cert_reqs": ssl.CERT_NONE},
 )
 

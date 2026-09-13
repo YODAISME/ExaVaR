@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-ExaVaR — Data Ingestion Pipeline (Person A deliverable)
+ExaVaR — Data Ingestion Pipeline (ExaVaR deliverable)
 ========================================================
 
 Reads raw 1-minute bar CSVs for each asset, normalizes, filters to
@@ -20,7 +20,7 @@ Environment variables for Exasol connection:
     EXASOL_PASSWORD   default: exasol
     EXASOL_SCHEMA    default: EXAVAR
 
-Author: Person A (Data & Ingestion Lead)
+Author: ExaVaR Team
 """
 
 import argparse
@@ -1044,7 +1044,7 @@ def run_pipeline(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="ExaVaR data ingestion pipeline — Person A deliverable",
+        description="ExaVaR data ingestion pipeline — ExaVaR deliverable",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

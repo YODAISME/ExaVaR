@@ -1,14 +1,14 @@
 -- =============================================================================
 -- ExaVaR — price_bars schema definition
--- Person B owns the Exasol schema, but Person A provides this reference DDL
+-- The Exasol schema is defined here as the authoritative reference DDL
 -- so the ingestion pipeline can CREATE OR REPLACE if needed.
 --
--- The authoritative table contract between Person A (ingestion) and
--- Person B (query/VaR) is:
+-- The authoritative table contract between the ingestion pipeline and
+-- the VaR query layer is:
 --
 --   price_bars(asset, ts, close_price, log_return)
 --
--- Person B may add indexes, distribution keys, or additional columns
+-- You may add indexes, distribution keys, or additional columns
 -- as needed for query performance.
 -- =============================================================================
 
@@ -22,11 +22,11 @@ CREATE TABLE IF NOT EXISTS EXAVAR.PRICE_BARS (
 );
 
 -- Uniqueness constraint: one row per asset per timestamp
--- Person B may convert this to a primary key or distribution key as needed
+-- You may convert this to a primary key or distribution key as needed
 -- ALTER TABLE EXAVAR.PRICE_BARS ADD CONSTRAINT pk_price_bars PRIMARY KEY (asset, ts);
 
 COMMENT ON TABLE EXAVAR.PRICE_BARS IS
     'Historical 1-minute close prices and log returns for ExaVaR portfolio assets. '
     'Market hours only: Mon-Fri 09:30-16:00 ET. '
-    'Loaded by Person A ingestion pipeline. '
-    'Queried by Person B VaR SQL.';
+    'Loaded by ingestion pipeline. '
+    'Queried by var_query.sql.';

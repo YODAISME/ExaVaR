@@ -1,5 +1,5 @@
 """
-benchmark.py — ExaVaR: Standalone Latency Benchmark (Person B Deliverable)
+benchmark.py — ExaVaR: Standalone Latency Benchmark (ExaVaR Benchmark)
 =============================================================================
 Measures query execution latency of the canonical parameterized VaR query
 against local Exasol Docker instance over 50 iterations to prove the sub-150ms
@@ -13,9 +13,9 @@ import time
 import random
 import pyexasol
 
-DSN = "localhost:8563"
-USER = "sys"
-PASSWORD = "exasol"
+DSN      = os.getenv("EXASOL_DSN",      "localhost:8563")
+USER     = os.getenv("EXASOL_USER",     "sys")
+PASSWORD = os.getenv("EXASOL_PASSWORD", "exasol")
 ITERATIONS = 50
 
 QUERY_PATH = os.path.join(os.path.dirname(__file__), "var_query.sql")

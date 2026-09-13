@@ -11,13 +11,18 @@ Runs 8 comprehensive acceptance checks on EXAVAR.PRICE_BARS:
   7. Timestamp range alignment (Mon-Fri 09:30-16:00 ET)
   8. Critical acceptance condition: Equal timestamp grid across all 8 assets
 """
+import os
 import ssl
 import pyexasol
 
+EXASOL_DSN      = os.getenv("EXASOL_DSN",      "localhost:8563")
+EXASOL_USER     = os.getenv("EXASOL_USER",     "sys")
+EXASOL_PASSWORD = os.getenv("EXASOL_PASSWORD", "exasol")
+
 conn = pyexasol.connect(
-    dsn="localhost:8563",
-    user="sys",
-    password="exasol",
+    dsn=EXASOL_DSN,
+    user=EXASOL_USER,
+    password=EXASOL_PASSWORD,
     websocket_sslopt={"cert_reqs": ssl.CERT_NONE},
 )
 

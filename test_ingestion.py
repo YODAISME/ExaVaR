@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 ExaVaR — Ingestion Pipeline Test Suite
 =======================================
@@ -10,7 +10,7 @@ Usage:
     python test_ingestion.py
     python -m pytest test_ingestion.py -v
 
-Author: Person A (Data & Ingestion Lead)
+Author: ExaVaR Team
 """
 
 import io

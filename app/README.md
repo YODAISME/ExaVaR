@@ -1,5 +1,5 @@
-# ExaVaR — Application & Frontend Layer
-**Owner:** Person C (Application & Frontend Lead)  
+﻿# ExaVaR — Application & Frontend Layer
+**Layer:** Application and Frontend  
 **Layer:** Layer 3 (Presentation & API Client Layer)
 
 ---
@@ -67,20 +67,20 @@ Inside server.py:
 USE_STUB = True   # Set to False to connect to live Exasol Docker instance
 ```
 - When USE_STUB = True: The server runs in standalone simulation mode, generating synthetic market returns across 1 year of minute bars for local UI/UX testing without dependencies.
-- When USE_STUB = False: The server runs Person B's frozen parameterized PERCENTILE_CONT(0.05) SQL query directly against the active Exasol database.
+- When USE_STUB = False: The server runs the frozen parameterized PERCENTILE_CONT(0.05) SQL query directly against the active Exasol database.
 
 ---
 
 ## Interface Contracts with Team Roles
 
-### Contract with Person B (Database Lead)
+### Contract with ExaVaR Team
 - Target Table: EXAVAR.price_bars(asset, ts, close_price, log_return)
 - Query File: var_query.sql bound via PyExasol decimal placeholders ({asset_allocation!d})
 - Expected Result: Exactly 1 summary row (VAR_DOLLAR_LOSS_95) returned per slider adjustment.
 - Target Latency: Round-trip query execution must stay under 150 ms.
 - Connection Lifecycle: Uses FastAPI lifespan pattern for a persistent connection, avoiding connection-handshake overhead on user interactions.
 
-### Contract with Person D (Docs, Deck & Video Lead)
+### Documentation and Demo Contract
 - Latency Counter: Prominently exposed on the dashboard footer for screen recordings and demo presentations.
 - Telemetry Details: Explicitly displays "SQL executed server-side" and "1 result row transferred over wire" to highlight the zero-network-bottleneck architecture to judges.
 
