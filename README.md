@@ -196,7 +196,6 @@ var = round(100_000 * (np.exp(p5) - 1), 2)
 
 ## Repository Layout
 
-```
 ExaVaR/
 |-- ingestion.py            <- 7-stage data pipeline (raw CSV -> Exasol)
 |-- schema.sql              <- PRICE_BARS table DDL
@@ -210,7 +209,9 @@ ExaVaR/
 |-- requirements.txt        <- Project dependencies
 |-- LICENSE                 <- MIT License
 |-- docs/
-|   `-- screenshot.png      <- Live terminal UI dashboard preview
+|   |-- screenshot.png      <- Live terminal UI dashboard preview
+|   |-- ExaVaR_pitch_deck_f.pptx <- Project pitch deck
+|   `-- ExaVaR Pitch & demo.mp4  <- Pitch and product demonstration video
 |-- data/
 |   |-- README.md           <- Data format + sourcing guide
 |   |-- AAPL.csv, NVDA.csv, AMD.csv, MSFT.csv, GOOGL.csv
@@ -220,7 +221,6 @@ ExaVaR/
     |-- server.py           <- FastAPI application
     |-- index.html          <- Risk terminal UI
     `-- requirements.txt    <- App server dependencies
-```
 
 ---
 
