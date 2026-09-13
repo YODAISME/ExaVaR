@@ -24,6 +24,12 @@ ExaVaR is a full-stack quantitative risk system that computes **95% 1-day Value-
 
 The user interacts with a Bloomberg-terminal-style browser UI, adjusts allocation sliders, and receives the portfolio VaR dollar loss — along with a live risk distribution chart, query latency, and the executed SQL — in **under 150 milliseconds**.
 
+## Pitch Deck
+
+[View the ExaVaR Pitch Deck](docs/ExaVaR_pitch_deck_f.pptx)
+
+The pitch deck covers ExaVaR's problem, solution, product, technical architecture, Exasol performance benchmarks, competitive landscape, validation results, and roadmap.
+
 ---
 
 ## The Problem
