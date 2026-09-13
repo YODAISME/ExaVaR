@@ -32,6 +32,31 @@ The pitch deck covers ExaVaR's problem, solution, product, technical architectur
 
 ---
 
+## Demo Video
+
+**ExaVaR — Pitch & Demo Video**
+
+The repository includes the complete ExaVaR pitch and product demonstration:
+
+**[▶ Watch the ExaVaR Pitch & Demo Video](docs/ExaVaR%20Pitch%20%26%20demo.mp4)**
+
+The video demonstrates the complete user-facing workflow and explains the project from the problem statement through the technical implementation:
+
+- **Problem & Motivation** — why accessible, real-time portfolio risk analysis is needed.
+- **ExaVaR Solution** — an interactive 95% 1-day Value-at-Risk terminal for mixed equity and cryptocurrency portfolios.
+- **Product Walkthrough** — portfolio notional and allocation controls, VaR output, risk distribution, latency, and SQL inspection.
+- **Exasol Integration** — how Exasol Personal acts as the analytical engine rather than simply serving as data storage.
+- **End-to-End Architecture** — raw 1-minute market data → ingestion and alignment → `EXAVAR.PRICE_BARS` → parameterized SQL → FastAPI → browser terminal.
+- **Live VaR Calculation** — portfolio weights are sent to the backend and the frozen SQL query calculates weighted returns and the 5th-percentile VaR cutoff inside Exasol.
+- **Performance** — the demonstration highlights the low-latency analytical workflow and the project's Exasol/Pandas benchmark.
+- **Hackathon Fit** — innovation, technical implementation, Exasol usage, UX, validation, and the overall solution are presented in the context of the Exasol Hackathon.
+
+> **Video file:** `docs/ExaVaR Pitch & demo.mp4`
+
+The video is included directly in the repository so judges can access the pitch and product demonstration alongside the source code, documentation, and pitch deck.
+
+---
+
 ## The Problem
 
 Retail and semi-professional investors have no accessible, real-time tool to understand downside risk across a mixed equity-crypto portfolio. Spreadsheets are static. Most risk platforms require expensive subscriptions or institutional access. The math — while well-established — is hidden behind paywalls.
